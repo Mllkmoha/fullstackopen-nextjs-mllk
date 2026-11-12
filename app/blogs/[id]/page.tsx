@@ -5,7 +5,7 @@ import { handleLikeBlog } from "../../actions/blogs"
 
 async function BlogContent({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const blog = getBlogById(Number(id))
+  const blog = await getBlogById(Number(id))
   if (!blog) notFound()
   return (
     <div>
@@ -16,7 +16,7 @@ async function BlogContent({ params }: { params: Promise<{ id: string }> }) {
         <input type="hidden" name="id" value={blog.id} />
         <button type="submit">like</button>
       </form>
-      <p>added by {blog.author}</p>
+      <p>added by {blog.user ? blog.user.name : blog.author}</p>
     </div>
   )
 }

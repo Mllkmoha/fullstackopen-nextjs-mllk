@@ -4,7 +4,8 @@ import { getBlogs } from "../services/blogs"
 
 async function BlogList({ searchParams }: { searchParams: Promise<{ search?: string }> }) {
   const { search } = await searchParams
-  const list = [...getBlogs()].sort((a, b) => b.likes - a.likes)
+  const rawList = await getBlogs()
+  const list = [...rawList].sort((a, b) => b.likes - a.likes)
   const filtered = search ? list.filter(b => b.title.toLowerCase().includes(search.toLowerCase())) : list
 
   return (

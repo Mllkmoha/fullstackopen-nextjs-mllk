@@ -1,14 +1,44 @@
-export type Blog = { id: number; title: string; author: string; url: string; likes: number }
-let blogs: Blog[] = [
-  { id: 1, title: "First Blog", author: "Author One", url: "https://example.com/1", likes: 5 },
-  { id: 2, title: "Second Blog", author: "Author Two", url: "https://example.com/2", likes: 10 },
-]
-export const getBlogs = () => blogs
-export const getBlogById = (id: number) => blogs.find((b) => b.id === id)
-export const addBlog = (title: string, author: string, url: string) => {
-  blogs.push({ id: blogs.length + 1, title, author, url, likes: 0 })
+import { eq } from "drizzle-orm"
+import { db } from "../../db"
+import { blogs, users } from "../../db/schema"
+
+export const getBlogs = async () => {
+  return db.query.blogs.findMany({
+    with: { user: true },
+  })
 }
-export const likeBlog = (id: number) => {
-  const b = blogs.find((x) => x.id === id)
-  if (b) b.likes += 1
+
+export const getBlogById = async (id: number) => {
+  return db.query.blogs.findFirst({
+    where: eq(blogs.id, id),
+    with: { user: true },
+  })
+}
+
+export const addBlog = async (title: string, author: string, url: string) => {
+  let defaultUser = await db.query.users.findFirst()
+  if (!defaultUser) {
+    const [created] = await db
+      .insert(users)
+      .values({ username: "mllkmoha", name: "Mohamed Rafik" })
+      .returning()
+    defaultUser = created
+  }
+  await db.insert(blogs).values({
+    title,
+    author,
+    url,
+    likes: 0,
+    userId: defaultUser.id,
+  })
+}
+
+export const likeBlog = async (id: number) => {
+  const blog = await getBlogById(id)
+  if (blog) {
+    await db
+      .update(blogs)
+      .set({ likes: blog.likes + 1 })
+      .where(eq(blogs.id, id))
+  }
 }
