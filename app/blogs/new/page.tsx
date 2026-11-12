@@ -1,4 +1,4 @@
-import { createBlog } from "../../../actions/blogs"
+import { createBlog } from "@/app/actions/blogs"
 export default function NewBlog() {
   return (
     <div>
