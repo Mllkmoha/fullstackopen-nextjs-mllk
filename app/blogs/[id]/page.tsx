@@ -1,13 +1,13 @@
-import { Suspense } from "react"
-import { notFound } from "next/navigation"
-import { getBlogById } from "../../services/blogs"
-import { handleLikeBlog } from "../../actions/blogs"
-import Link from "next/link"
+import { Suspense } from "react";
+import { notFound } from "next/navigation";
+import { getBlogById } from "../../services/blogs";
+import { handleLikeBlog } from "../../actions/blogs";
+import Link from "next/link";
 
 async function BlogContent({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params
-  const blog = await getBlogById(Number(id))
-  if (!blog) notFound()
+  const { id } = await params;
+  const blog = await getBlogById(Number(id));
+  if (!blog) notFound();
 
   return (
     <div className="max-w-2xl mx-auto bg-slate-900/80 border border-slate-800 rounded-3xl p-8 shadow-2xl backdrop-blur-xl">
@@ -16,7 +16,8 @@ async function BlogContent({ params }: { params: Promise<{ id: string }> }) {
           Blog Details
         </span>
         <span className="text-sm text-slate-400">
-          Added by <span className="text-slate-200 font-medium">{blog.user ? blog.user.name : blog.author}</span>
+          Added by{" "}
+          <span className="text-slate-200 font-medium">{blog.user.name}</span>
         </span>
       </div>
 
@@ -37,7 +38,9 @@ async function BlogContent({ params }: { params: Promise<{ id: string }> }) {
 
       <div className="flex items-center justify-between pt-6 border-t border-slate-800/80">
         <div className="flex items-center gap-2">
-          <span className="text-2xl font-bold text-slate-100">{blog.likes}</span>
+          <span className="text-2xl font-bold text-slate-100">
+            {blog.likes}
+          </span>
           <span className="text-sm text-slate-400">Likes</span>
         </div>
 
@@ -61,17 +64,23 @@ async function BlogContent({ params }: { params: Promise<{ id: string }> }) {
         </Link>
       </div>
     </div>
-  )
+  );
 }
 
-export default function BlogDetail({ params }: { params: Promise<{ id: string }> }) {
+export default function BlogDetail({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   return (
     <div className="py-6">
-      <Suspense fallback={
-        <div className="max-w-2xl mx-auto bg-slate-900/40 border border-slate-800/60 rounded-3xl p-8 h-64 animate-pulse"></div>
-      }>
+      <Suspense
+        fallback={
+          <div className="max-w-2xl mx-auto bg-slate-900/40 border border-slate-800/60 rounded-3xl p-8 h-64 animate-pulse"></div>
+        }
+      >
         <BlogContent params={params} />
       </Suspense>
     </div>
-  )
+  );
 }
